@@ -23,6 +23,14 @@ import { healthPassportRouter } from '../health/healthPassport.routes';
 import { medicalRecordRouter } from '../medicalRecords/medicalRecord.routes';
 import { vaccinationRouter } from '../vaccinations/vaccination.routes';
 import { medicationRouter } from '../medications/medication.routes';
+import {
+  getDietPlanHandler,
+  getExercisePlanHandler,
+  listDietPlansHandler,
+  listExercisePlansHandler,
+} from '../ai/ai.controller';
+import { planIdParamSchema } from '../ai/ai.schema';
+import { getEmergencyCardHandler } from '../emergency/emergency.controller';
 
 const router = Router();
 
@@ -45,6 +53,41 @@ router.use('/:petId/health-passport', healthPassportRouter);
 router.use('/:petId/medical-records', medicalRecordRouter);
 router.use('/:petId/vaccinations', vaccinationRouter);
 router.use('/:petId/medications', medicationRouter);
+
+router.get(
+  '/:petId/diet-plans',
+  authenticateUser,
+  validateParams(petIdParamSchema),
+  asyncHandler(listDietPlansHandler),
+);
+
+router.get(
+  '/:petId/diet-plans/:planId',
+  authenticateUser,
+  validateParams(planIdParamSchema),
+  asyncHandler(getDietPlanHandler),
+);
+
+router.get(
+  '/:petId/exercise-plans',
+  authenticateUser,
+  validateParams(petIdParamSchema),
+  asyncHandler(listExercisePlansHandler),
+);
+
+router.get(
+  '/:petId/exercise-plans/:planId',
+  authenticateUser,
+  validateParams(planIdParamSchema),
+  asyncHandler(getExercisePlanHandler),
+);
+
+router.get(
+  '/:petId/emergency-card',
+  authenticateUser,
+  validateParams(petIdParamSchema),
+  asyncHandler(getEmergencyCardHandler),
+);
 
 router.get(
   '/:petId',
