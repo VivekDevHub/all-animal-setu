@@ -46,7 +46,7 @@ export function Sidebar({ role = "PET_OWNER", onCloseMobile }: SidebarProps) {
     { name: "Health & Records", href: "/health/records", icon: HeartPulse },
     { name: "Find a Vet", href: "/vets", icon: MapPin },
     { name: "Appointments", href: "/appointments", icon: CalendarDays, badge: "1" },
-    { name: "AI Pet Assistant", href: "/ai-assistant", icon: Sparkles, highlight: true },
+    { name: "AI Pet Assistant", href: "/ai", icon: Sparkles, highlight: true },
     { name: "Emergency", href: "/emergency", icon: AlertTriangle, danger: true },
     { name: "Community", href: "/community", icon: Users },
     { name: "Insurance", href: "/insurance", icon: ShieldCheck },

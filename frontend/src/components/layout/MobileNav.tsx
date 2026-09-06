@@ -16,7 +16,7 @@ export function MobileNav() {
   const navItems = [
     { name: "Home", href: "/dashboard", icon: LayoutDashboard },
     { name: "Pets", href: "/pets", icon: PawPrint },
-    { name: "AI Vet", href: "/ai-assistant", icon: Sparkles, highlight: true },
+    { name: "AI Vet", href: "/ai", icon: Sparkles, highlight: true },
     { name: "Vets", href: "/vets", icon: MapPin },
     { name: "Profile", href: "/profile", icon: User },
   ];
