@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+service-account.json
+*-firebase-adminsdk-*.json
+
+# Build output
+functions/lib/
+dist/
+*.js.map
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+pubsub-debug.log
+storage-debug.log
+database-debug.log
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo

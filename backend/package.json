@@ -1,0 +1,12 @@
+{
+  "name": "animalsetu-backend",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix functions",
+    "build": "npm run build --prefix functions",
+    "test": "npm run test --prefix functions",
+    "lint": "npm run lint --prefix functions",
+    "serve": "npm run serve --prefix functions",
+    "deploy": "firebase deploy --only functions,firestore,storage"
+  }
+}

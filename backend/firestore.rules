@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Phase 1: Deny all direct client access.
+    // Privileged operations go through Cloud Functions with Admin SDK.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Phase 1: Deny all direct client access.
+    // File operations go through Cloud Functions with Admin SDK.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
