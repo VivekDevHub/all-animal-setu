@@ -41,6 +41,26 @@ service cloud.firestore {
       allow create: if isOwner(request.resource.data.ownerId);
     }
 
+    match /aiConversations/{conversationId} {
+      allow read, update, delete: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+    }
+
+    match /aiConversations/{conversationId}/{document=**} {
+      allow read, write: if isSignedIn()
+        && get(/databases/$(database)/documents/aiConversations/$(conversationId)).data.userId == request.auth.uid;
+    }
+
+    match /emergencies/{emergencyId} {
+      allow read, update: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow delete: if false;
+    }
+
+    match /auditLogs/{logId} {
+      allow read, write: if false; // Server-side admin only
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

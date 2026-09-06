@@ -38,6 +38,11 @@ service firebase.storage {
       allow write: if isOwner(userId) && isValidMedicalUpload();
     }
 
+    match /users/{userId}/pets/{petId}/ai/breed/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidImageUpload();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

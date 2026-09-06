@@ -93,6 +93,11 @@ Authorization: Bearer <firebase-id-token>
 | ✅ | PATCH | `/api/v1/pets/:petId` | Yes | Update pet (ownership verified) |
 | ✅ | DELETE | `/api/v1/pets/:petId` | Yes | Soft-delete pet (`isActive: false`) |
 | ✅ | POST | `/api/v1/pets/:petId/photo` | Yes | Upload pet profile photo (multipart `photo`) |
+| ✅ | GET | `/api/v1/pets/:petId/diet-plans` | Yes | List AI diet plans for pet |
+| ✅ | GET | `/api/v1/pets/:petId/diet-plans/:planId` | Yes | Get specific AI diet plan |
+| ✅ | GET | `/api/v1/pets/:petId/exercise-plans` | Yes | List AI exercise plans for pet |
+| ✅ | GET | `/api/v1/pets/:petId/exercise-plans/:planId` | Yes | Get specific AI exercise plan |
+| ✅ | GET | `/api/v1/pets/:petId/emergency-card` | Yes | Get pet emergency health card |
 
 > `ownerId` is always set server-side from the authenticated user. Never accepted from the client.  
 > Delete is a **soft delete** — sets `isActive: false` to preserve linked medical data.
@@ -207,36 +212,45 @@ photo: <file>  (JPEG, PNG, WEBP — max 5MB)
 
 ---
 
-## AI
+## AI Pet Health & Discovery
 
 | Status | Method | Endpoint | Auth | Rate limit | Description |
 |--------|--------|----------|------|------------|-------------|
-| 🔜 | POST | `/api/v1/ai/health-assistant` | Yes | 10/min | AI health guidance (not a diagnosis) |
-| 🔜 | POST | `/api/v1/ai/diet-plan` | Yes | 10/min | AI diet plan based on pet profile |
-| 🔜 | POST | `/api/v1/ai/exercise-plan` | Yes | 10/min | AI exercise plan based on pet profile |
-| 🔜 | POST | `/api/v1/ai/breed-identify` | Yes | 10/min | Breed identification from image |
+| ✅ | POST | `/api/v1/ai/health-assistant` | Yes | 20/hr | AI health assistant triage & guidance (not a diagnosis) |
+| ✅ | GET | `/api/v1/ai/conversations` | Yes | Standard | List user's AI conversations |
+| ✅ | GET | `/api/v1/ai/conversations/:conversationId` | Yes | Standard | Get conversation message history |
+| ✅ | DELETE | `/api/v1/ai/conversations/:conversationId` | Yes | Standard | Delete AI conversation and history |
+| ✅ | POST | `/api/v1/ai/diet-plan` | Yes | 5/hr | Generate tailored AI diet & nutrition plan |
+| ✅ | POST | `/api/v1/ai/exercise-plan` | Yes | 5/hr | Generate tailored AI activity & exercise plan |
+| ✅ | POST | `/api/v1/ai/breed-identification` | Yes | 10/hr | Breed estimation from pet photo in Firebase Storage |
 
 **AI urgency levels:** `LOW` · `MODERATE` · `URGENT` · `EMERGENCY`
 
----
-
-## Veterinarians & Clinics
-
-| Status | Method | Endpoint | Auth | Description |
-|--------|--------|----------|------|-------------|
-| 🔜 | GET | `/api/v1/vets` | Optional | List/search vet clinics |
-| 🔜 | GET | `/api/v1/vets/nearby` | Optional | Nearby clinics by lat/lng/radius |
-| 🔜 | GET | `/api/v1/vets/:vetId` | Optional | Get clinic/vet details |
+> **AI Safety Policy:** Gemini is an educational tool, not a veterinarian. The system never provides definitive diagnoses, never prescribes medications or dosages, and deterministically escalates acute emergency signals (`EMERGENCY`) recommending immediate veterinary care.
 
 ---
 
-## Emergency
+## Veterinarians & Discovery
+
+| Status | Method | Endpoint | Auth | Rate limit | Description |
+|--------|--------|----------|------|------------|-------------|
+| ✅ | GET | `/api/v1/vets/nearby` | Yes | 60/hr | Find nearby veterinary clinics/hospitals (`lat`, `lng`, `radius`, `type`) |
+
+**Search types:** `VET` (default) · `HOSPITAL` · `EMERGENCY`  
+**Max radius:** 50,000 meters (50km)
+
+---
+
+## Emergency Assistance
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | GET | `/api/v1/emergency/nearby` | Optional | Nearest emergency veterinary clinics |
+| ✅ | POST | `/api/v1/emergency` | Yes | Report emergency, get nearby emergency clinics & triage |
+| ✅ | GET | `/api/v1/emergency` | Yes | List current user's emergency events |
+| ✅ | GET | `/api/v1/emergency/:emergencyId` | Yes | Get emergency event details & nearby facilities |
+| ✅ | PATCH | `/api/v1/emergency/:emergencyId` | Yes | Update status (`OPEN`, `ASSISTED`, `RESOLVED`, `CANCELLED`) |
 
-> Emergency search works independently of AI. Returns call, directions, and clinic info immediately.
+> Emergency UI prioritizes **immediate action** (CALL / NAVIGATE) over AI chat. Emergency records verify pet ownership and never expose PII to unauthorized users.
 
 ---
 
@@ -371,11 +385,28 @@ photo: <file>  (JPEG, PNG, WEBP — max 5MB)
 | `PET_NOT_FOUND` | 404 | Pet not found |
 | `USER_NOT_FOUND` | 404 | User not found |
 | `APPOINTMENT_NOT_FOUND` | 404 | Appointment not found |
+| `MEDICAL_RECORD_NOT_FOUND` | 404 | Medical record not found |
+| `VACCINATION_NOT_FOUND` | 404 | Vaccination record not found |
+| `MEDICATION_NOT_FOUND` | 404 | Medication record not found |
+| `REMINDER_NOT_FOUND` | 404 | Reminder not found |
+| `DOCUMENT_NOT_FOUND` | 404 | Document not found |
+| `OCR_ERROR` | 503 | OCR extraction failure |
 | `INVALID_ROLE` | 403 | Role not allowed for this action |
 | `FILE_TOO_LARGE` | 400 | Upload exceeds size limit |
 | `INVALID_FILE_TYPE` | 400 | Unsupported file type |
-| `AI_ERROR` | 503 | AI service unavailable |
-| `RATE_LIMITED` | 429 | Too many requests |
+| `AI_ERROR` | 503 | AI service generic error |
+| `AI_SERVICE_UNAVAILABLE` | 503 | Gemini AI service temporarily unavailable |
+| `AI_INVALID_RESPONSE` | 502 | AI output failed schema validation |
+| `PLACES_SERVICE_UNAVAILABLE` | 503 | Google Places discovery service unavailable |
+| `EMERGENCY_CREATION_FAILED` | 500 | Emergency event creation failure |
+| `EMERGENCY_NOT_FOUND` | 404 | Emergency event not found |
+| `CONVERSATION_NOT_FOUND` | 404 | AI conversation not found or access denied |
+| `DIET_PLAN_NOT_FOUND` | 404 | AI diet plan not found |
+| `EXERCISE_PLAN_NOT_FOUND` | 404 | AI exercise plan not found |
+| `BREED_IDENTIFICATION_NOT_FOUND` | 404 | Breed identification result not found |
+| `STORAGE_ACCESS_DENIED` | 403 | Unauthorized storage file access |
+| `RATE_LIMITED` | 429 | Rate limit exceeded |
+| `RATE_LIMIT_EXCEEDED` | 429 | Rate limit exceeded (hourly/per-minute) |
 | `INTERNAL_ERROR` | 500 | Unexpected server error |
 
 ---
@@ -416,8 +447,15 @@ Response includes:
 | 2G | Document upload | ✅ Complete |
 | 2H | OCR (Vision API) | ✅ Complete |
 | 2I | Security rules, indexes, tests | ✅ Complete |
-| 3–12 | AI, vets, appointments, community, admin | 🔜 |
+| 3A | Gemini AI Health Assistant | ✅ Complete |
+| 3B | AI Diet Planner | ✅ Complete |
+| 3C | AI Exercise Planner | ✅ Complete |
+| 3D | AI Breed Identification (Vision) | ✅ Complete |
+| 3E | Nearby Vet/Hospital Discovery (Places API) | ✅ Complete |
+| 3F | Emergency Assistance & Health Card | ✅ Complete |
+| 3G | Rate limiting, audit logging, security rules | ✅ Complete |
+| 4–12 | Appointments, Community, Admin, etc. | 🔜 Planned |
 
 ---
 
-*Last updated: Phase 2 complete — Pet & Healthcare Core Backend.*
+*Last updated: Phase 3 complete — AI, Veterinary Discovery & Emergency Assistance.*
