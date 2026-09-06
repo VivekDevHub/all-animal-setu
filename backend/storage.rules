@@ -2,8 +2,42 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Phase 1: Deny all direct client access.
-    // File operations go through Cloud Functions with Admin SDK.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidImageUpload() {
+      return request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    function isValidMedicalUpload() {
+      return request.resource.size <= 10 * 1024 * 1024
+        && (
+          request.resource.contentType == 'application/pdf'
+          || request.resource.contentType.matches('image/(jpeg|png|webp)')
+        );
+    }
+
+    match /users/{userId}/pets/{petId}/profile/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidImageUpload();
+    }
+
+    match /users/{userId}/pets/{petId}/medical-records/{recordId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidMedicalUpload();
+    }
+
+    match /users/{userId}/pets/{petId}/documents/{documentId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidMedicalUpload();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

@@ -87,13 +87,45 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/pets` | Yes (PET_OWNER+) | Create a pet |
-| 🔜 | GET | `/api/v1/pets` | Yes | List current user's pets |
-| 🔜 | GET | `/api/v1/pets/:petId` | Yes | Get pet by ID (ownership verified) |
-| 🔜 | PATCH | `/api/v1/pets/:petId` | Yes | Update pet (ownership verified) |
-| 🔜 | DELETE | `/api/v1/pets/:petId` | Yes | Soft-delete pet (ownership verified) |
+| ✅ | POST | `/api/v1/pets` | Yes (PET_OWNER+) | Create a pet |
+| ✅ | GET | `/api/v1/pets` | Yes | List current user's pets (paginated) |
+| ✅ | GET | `/api/v1/pets/:petId` | Yes | Get pet by ID (ownership verified) |
+| ✅ | PATCH | `/api/v1/pets/:petId` | Yes | Update pet (ownership verified) |
+| ✅ | DELETE | `/api/v1/pets/:petId` | Yes | Soft-delete pet (`isActive: false`) |
+| ✅ | POST | `/api/v1/pets/:petId/photo` | Yes | Upload pet profile photo (multipart `photo`) |
 
-> `ownerId` is always set server-side from the authenticated user. Never accepted from the client.
+> `ownerId` is always set server-side from the authenticated user. Never accepted from the client.  
+> Delete is a **soft delete** — sets `isActive: false` to preserve linked medical data.
+
+### Create pet example
+
+```http
+POST /api/v1/pets
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Bruno",
+  "species": "Dog",
+  "breed": "Golden Retriever",
+  "gender": "Male",
+  "dateOfBirth": "2022-05-10",
+  "weight": 24.5,
+  "weightUnit": "kg",
+  "allergies": [],
+  "medicalConditions": []
+}
+```
+
+### Upload photo example
+
+```http
+POST /api/v1/pets/:petId/photo
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+photo: <file>  (JPEG, PNG, WEBP — max 5MB)
+```
 
 ---
 
@@ -101,8 +133,8 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | GET | `/api/v1/pets/:petId/health` | Yes | Get digital health passport |
-| 🔜 | PUT | `/api/v1/pets/:petId/health` | Yes | Update health passport fields |
+| ✅ | GET | `/api/v1/pets/:petId/health-passport` | Yes | Get digital health passport |
+| ✅ | PUT | `/api/v1/pets/:petId/health-passport` | Yes | Create/update health passport |
 
 ---
 
@@ -110,11 +142,11 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/pets/:petId/medical-records` | Yes | Create medical record |
-| 🔜 | GET | `/api/v1/pets/:petId/medical-records` | Yes | List records (paginated) |
-| 🔜 | GET | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Get single record |
-| 🔜 | PATCH | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Update record |
-| 🔜 | DELETE | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Delete record |
+| ✅ | POST | `/api/v1/pets/:petId/medical-records` | Yes | Create medical record |
+| ✅ | GET | `/api/v1/pets/:petId/medical-records` | Yes | List records (paginated) |
+| ✅ | GET | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Get single record |
+| ✅ | PATCH | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Update record |
+| ✅ | DELETE | `/api/v1/pets/:petId/medical-records/:recordId` | Yes | Delete record |
 
 **Record types:** `CHECKUP` · `SURGERY` · `LAB_REPORT` · `PRESCRIPTION` · `VACCINATION` · `EMERGENCY` · `OTHER`
 
@@ -124,11 +156,11 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/pets/:petId/vaccinations` | Yes | Add vaccination record |
-| 🔜 | GET | `/api/v1/pets/:petId/vaccinations` | Yes | List vaccinations |
-| 🔜 | GET | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Get vaccination |
-| 🔜 | PATCH | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Update vaccination |
-| 🔜 | DELETE | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Delete vaccination |
+| ✅ | POST | `/api/v1/pets/:petId/vaccinations` | Yes | Add vaccination record |
+| ✅ | GET | `/api/v1/pets/:petId/vaccinations` | Yes | List vaccinations (paginated) |
+| ✅ | GET | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Get vaccination |
+| ✅ | PATCH | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Update vaccination |
+| ✅ | DELETE | `/api/v1/pets/:petId/vaccinations/:vaccinationId` | Yes | Delete vaccination |
 
 > Auto-creates a reminder when `nextDueDate` is provided.
 
@@ -138,11 +170,11 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/pets/:petId/medications` | Yes | Add medication record |
-| 🔜 | GET | `/api/v1/pets/:petId/medications` | Yes | List medications |
-| 🔜 | GET | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Get medication |
-| 🔜 | PATCH | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Update medication |
-| 🔜 | DELETE | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Deactivate/delete medication |
+| ✅ | POST | `/api/v1/pets/:petId/medications` | Yes | Add medication record |
+| ✅ | GET | `/api/v1/pets/:petId/medications` | Yes | List medications (paginated) |
+| ✅ | GET | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Get medication |
+| ✅ | PATCH | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Update medication |
+| ✅ | DELETE | `/api/v1/pets/:petId/medications/:medicationId` | Yes | Deactivate medication |
 
 > AI does **not** prescribe medication. Records come from vet/user input only.
 
@@ -152,11 +184,11 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/reminders` | Yes | Create custom reminder |
-| 🔜 | GET | `/api/v1/reminders` | Yes | List user reminders (paginated) |
-| 🔜 | GET | `/api/v1/reminders/:reminderId` | Yes | Get reminder |
-| 🔜 | PATCH | `/api/v1/reminders/:reminderId` | Yes | Update reminder |
-| 🔜 | DELETE | `/api/v1/reminders/:reminderId` | Yes | Cancel/delete reminder |
+| ✅ | POST | `/api/v1/reminders` | Yes | Create custom reminder |
+| ✅ | GET | `/api/v1/reminders` | Yes | List user reminders (paginated, optional `petId`) |
+| ✅ | GET | `/api/v1/reminders/:reminderId` | Yes | Get reminder |
+| ✅ | PATCH | `/api/v1/reminders/:reminderId` | Yes | Update reminder |
+| ✅ | DELETE | `/api/v1/reminders/:reminderId` | Yes | Cancel reminder (`status: CANCELLED`) |
 
 **Reminder types:** `VACCINATION` · `MEDICATION` · `APPOINTMENT` · `HEALTH_CHECK` · `CUSTOM`
 
@@ -166,10 +198,12 @@ Authorization: Bearer <firebase-id-token>
 
 | Status | Method | Endpoint | Auth | Description |
 |--------|--------|----------|------|-------------|
-| 🔜 | POST | `/api/v1/documents/upload` | Yes | Upload medical document (PDF, JPG, PNG, WEBP) |
-| 🔜 | GET | `/api/v1/documents/:documentId` | Yes | Get document metadata |
-| 🔜 | POST | `/api/v1/documents/:documentId/ocr` | Yes | Trigger OCR extraction (returns DRAFT data) |
-| 🔜 | POST | `/api/v1/documents/:documentId/confirm` | Yes | Confirm OCR draft → save to Firestore |
+| ✅ | POST | `/api/v1/documents/upload` | Yes | Upload medical document (multipart `file`) |
+| ✅ | GET | `/api/v1/documents/:documentId` | Yes | Get document metadata |
+| ✅ | POST | `/api/v1/documents/:documentId/ocr` | Yes | Trigger OCR extraction |
+| ✅ | POST | `/api/v1/documents/:documentId/confirm` | Yes | Confirm OCR draft (optional save as vaccination) |
+
+> OCR output is **DRAFT** until confirmed. Set `runOcr=true` on upload for async processing.
 
 ---
 
@@ -373,18 +407,17 @@ Response includes:
 | Phase | Modules | Status |
 |-------|---------|--------|
 | 1 | Foundation, health, middleware | ✅ Complete |
-| 2 | Users, Pets | 🔜 Next |
-| 3 | Health passport, medical records, vaccinations, medications, documents, OCR | 🔜 |
-| 4 | Reminders, notifications | 🔜 |
-| 5 | AI engine | 🔜 |
-| 6 | Vets, emergency | 🔜 |
-| 7 | Appointments | 🔜 |
-| 8 | Consultations | 🔜 |
-| 9 | Community | 🔜 |
-| 10 | Insurance, walker, lost pet, analytics | 🔜 |
-| 11 | Admin | 🔜 |
-| 12 | Production hardening, CI/CD | 🔜 |
+| 2A | Pets (CRUD, photo, ownership) | ✅ Complete |
+| 2B | Health passport | ✅ Complete |
+| 2C | Medical records | ✅ Complete |
+| 2D | Vaccinations + auto reminders | ✅ Complete |
+| 2E | Medications + reminders | ✅ Complete |
+| 2F | Reminders + scheduler | ✅ Complete |
+| 2G | Document upload | ✅ Complete |
+| 2H | OCR (Vision API) | ✅ Complete |
+| 2I | Security rules, indexes, tests | ✅ Complete |
+| 3–12 | AI, vets, appointments, community, admin | 🔜 |
 
 ---
 
-*Last updated: Phase 1 — 4 endpoints implemented, remaining endpoints planned.*
+*Last updated: Phase 2 complete — Pet & Healthcare Core Backend.*
