@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     "An all-in-one digital platform for pet owners and animal welfare: manage health records, find veterinary care, AI-powered guidance, emergency support, and lost pet QR tags.",
 };
 
+import { ToastProvider } from "@/components/ui/toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,7 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </ThemeProvider>
       </body>
     </html>
