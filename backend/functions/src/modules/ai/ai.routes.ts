@@ -13,20 +13,25 @@ import {
   conversationIdParamSchema,
   healthAssistantInputSchema,
   petIdBodySchema,
+  planIdParamSchema,
 } from './ai.schema';
 import {
   breedIdentificationHandler,
   createDietPlanHandler,
   createExercisePlanHandler,
   deleteConversationHandler,
+  getDietPlanHandler,
   getConversationHandler,
+  getExercisePlanHandler,
   healthAssistantHandler,
   listConversationsHandler,
+  listDietPlansHandler,
+  listExercisePlansHandler,
 } from './ai.controller';
 
 const router = Router();
 
-// Health Assistant
+// --- Health Assistant ---
 router.post(
   '/health-assistant',
   authenticateUser,
@@ -35,7 +40,7 @@ router.post(
   asyncHandler(healthAssistantHandler),
 );
 
-// AI Conversations
+// --- AI Conversations ---
 router.get('/conversations', authenticateUser, asyncHandler(listConversationsHandler));
 
 router.get(
@@ -52,7 +57,7 @@ router.delete(
   asyncHandler(deleteConversationHandler),
 );
 
-// AI Diet Plan
+// --- AI Diet Plans ---
 router.post(
   '/diet-plan',
   authenticateUser,
@@ -61,7 +66,20 @@ router.post(
   asyncHandler(createDietPlanHandler),
 );
 
-// AI Exercise Plan
+router.get(
+  '/diet-plans/:petId',
+  authenticateUser,
+  asyncHandler(listDietPlansHandler),
+);
+
+router.get(
+  '/diet-plans/:petId/:planId',
+  authenticateUser,
+  validateParams(planIdParamSchema),
+  asyncHandler(getDietPlanHandler),
+);
+
+// --- AI Exercise Plans ---
 router.post(
   '/exercise-plan',
   authenticateUser,
@@ -70,7 +88,20 @@ router.post(
   asyncHandler(createExercisePlanHandler),
 );
 
-// AI Breed Identification
+router.get(
+  '/exercise-plans/:petId',
+  authenticateUser,
+  asyncHandler(listExercisePlansHandler),
+);
+
+router.get(
+  '/exercise-plans/:petId/:planId',
+  authenticateUser,
+  validateParams(planIdParamSchema),
+  asyncHandler(getExercisePlanHandler),
+);
+
+// --- AI Breed Identification ---
 router.post(
   '/breed-identification',
   authenticateUser,

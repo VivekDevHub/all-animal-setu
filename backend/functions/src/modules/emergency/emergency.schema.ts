@@ -26,3 +26,7 @@ export const updateEmergencyStatusSchema = z.object({
 export const emergencyIdParamSchema = z.object({
   emergencyId: z.string().min(1, 'emergencyId is required'),
 });
+
+export const petIdParamSchema = z.object({
+  petId: z.string().min(1, 'petId is required'),
+});

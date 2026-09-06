@@ -5,10 +5,12 @@ import { asyncHandler } from '../../middleware/errorMiddleware';
 import {
   createEmergencySchema,
   emergencyIdParamSchema,
+  petIdParamSchema,
   updateEmergencyStatusSchema,
 } from './emergency.schema';
 import {
   createEmergencyHandler,
+  getEmergencyCardHandler,
   getEmergencyHandler,
   listEmergenciesHandler,
   updateEmergencyStatusHandler,
@@ -16,6 +18,7 @@ import {
 
 const router = Router();
 
+// Create an emergency
 router.post(
   '/',
   authenticateUser,
@@ -23,12 +26,22 @@ router.post(
   asyncHandler(createEmergencyHandler),
 );
 
+// List user's emergencies
 router.get(
   '/',
   authenticateUser,
   asyncHandler(listEmergenciesHandler),
 );
 
+// Get emergency card for a pet (must be declared BEFORE /:emergencyId to avoid route collision)
+router.get(
+  '/card/:petId',
+  authenticateUser,
+  validateParams(petIdParamSchema),
+  asyncHandler(getEmergencyCardHandler),
+);
+
+// Get emergency by ID
 router.get(
   '/:emergencyId',
   authenticateUser,
@@ -36,6 +49,7 @@ router.get(
   asyncHandler(getEmergencyHandler),
 );
 
+// Update emergency status
 router.patch(
   '/:emergencyId',
   authenticateUser,
