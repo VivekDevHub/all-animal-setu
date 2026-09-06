@@ -30,6 +30,14 @@ const envSchema = z.object({
   RATE_LIMIT_AUTH_PER_MINUTE: z.coerce.number().int().positive().default(20),
   RATE_LIMIT_UPLOAD_PER_MINUTE: z.coerce.number().int().positive().default(10),
 
+  RATE_LIMIT_AI_HEALTH_HOURLY: z.coerce.number().int().positive().default(20),
+  RATE_LIMIT_AI_DIET_HOURLY: z.coerce.number().int().positive().default(5),
+  RATE_LIMIT_AI_EXERCISE_HOURLY: z.coerce.number().int().positive().default(5),
+  RATE_LIMIT_AI_BREED_HOURLY: z.coerce.number().int().positive().default(10),
+  RATE_LIMIT_PLACES_HOURLY: z.coerce.number().int().positive().default(60),
+
+  GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 
@@ -55,6 +63,12 @@ function loadEnvFromProcess(): Record<string, string | undefined> {
     RATE_LIMIT_AI_PER_MINUTE: process.env.RATE_LIMIT_AI_PER_MINUTE,
     RATE_LIMIT_AUTH_PER_MINUTE: process.env.RATE_LIMIT_AUTH_PER_MINUTE,
     RATE_LIMIT_UPLOAD_PER_MINUTE: process.env.RATE_LIMIT_UPLOAD_PER_MINUTE,
+    RATE_LIMIT_AI_HEALTH_HOURLY: process.env.RATE_LIMIT_AI_HEALTH_HOURLY,
+    RATE_LIMIT_AI_DIET_HOURLY: process.env.RATE_LIMIT_AI_DIET_HOURLY,
+    RATE_LIMIT_AI_EXERCISE_HOURLY: process.env.RATE_LIMIT_AI_EXERCISE_HOURLY,
+    RATE_LIMIT_AI_BREED_HOURLY: process.env.RATE_LIMIT_AI_BREED_HOURLY,
+    RATE_LIMIT_PLACES_HOURLY: process.env.RATE_LIMIT_PLACES_HOURLY,
+    GEMINI_MODEL: process.env.GEMINI_MODEL,
     LOG_LEVEL: process.env.LOG_LEVEL,
   };
 }

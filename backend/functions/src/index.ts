@@ -73,4 +73,6 @@ export const api = onRequest(
   app,
 );
 
+export { processReminders } from './scheduled/reminderScheduler';
+
 export { app, createApp };
