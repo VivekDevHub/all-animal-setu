@@ -8,6 +8,9 @@ import { AppError, ERROR_CODES } from '../shared/errors';
 import { petRouter } from '../modules/pets/pet.routes';
 import { reminderRouter } from '../modules/reminders/reminder.routes';
 import { documentRouter } from '../modules/documents/document.routes';
+import { aiRouter } from '../modules/ai/ai.routes';
+import { vetRouter } from '../modules/vets/vet.routes';
+import { emergencyRouter } from '../modules/emergency/emergency.routes';
 
 const router = Router();
 
@@ -48,8 +51,11 @@ router.get(
 router.use('/pets', petRouter);
 router.use('/reminders', reminderRouter);
 router.use('/documents', documentRouter);
+router.use('/ai', aiRouter);
+router.use('/vets', vetRouter);
+router.use('/emergency', emergencyRouter);
 
-// Phase 3+ module routes will be mounted here
+// Fallback for unmapped endpoints
 router.use((_req, _res, next) => {
   next(new AppError(ERROR_CODES.NOT_FOUND, 'API endpoint not found'));
 });
